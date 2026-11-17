@@ -31,6 +31,15 @@ functions:
           - TOPOLOGY
           - MONGODB_VERSION
           - ORCHESTRATION_FILE
+          # Look for AWS credentials in case the "start mongodb" function
+          # is using the 'latest' version of MongoDB, which downloads the latest MongoDB distribution from a private S3 bucket.
+          #
+          # Any applications that use "latest" will need to have the {drivers_secrets_test_role}
+          # role defined in their evergreen project.
+          # See DRIVERS-3628 for more details: https://jira.mongodb.org/browse/DRIVERS-3628
+          - AWS_SECRET_ACCESS_KEY
+          - AWS_ACCESS_KEY_ID
+          - AWS_SESSION_TOKEN
 
   # Fetches the drivers-evergreen-tools repo as a resource
   "prepare resources":
