@@ -13,11 +13,22 @@
 functions:
   # Starts a mongodb deployment using drivers-evergreen-tools. Use "stop mongodb" to stop it.
   #
+  # For runs using the 'latest' MongoDB enterprise distribution, the application will need to
+  # have logic in its evergreen.yml to assume the {drivers-secrets-test-role}. This allows
+  # this function to download the distribution, which is behind a private S3 bucket.
+  #
+  #  Role assumption ensures that the AWS_* arguments are set in the environment when this function is run.
+  #
+  # assume_role is not needed if this function does not use 'latest' as the MONGODB_VERSION.
+  #
   # Arguments:
   #   - TOPOLOGY - topology of deployment (often our projects just use "server")
   #   - MONGODB_VERSION - the version to use (can use aliases such as "latest")
   #   - ORCHESTRATION_FILE - (optional) the name of the config file to use, from
   #     $DRIVERS_TOOLS/.evergreen/orchestration/configs/<topology>s/
+  #   - AWS_SECRET_ACCESS_KEY - AWS_SECRET_ACCES_KEY associated with the role running this function.
+  #   - AWS_ACCESS_KEY_ID - AWS_ACCESS_KEY_ID associated with the role running this function.
+  #   - AWS_SESSION_TOKEN - AWS_SESSION_TOKEN associated with the role running this function.
   "start mongodb":
     - command: subprocess.exec
       params:
@@ -34,7 +45,7 @@ functions:
           # Look for AWS credentials in case the "start mongodb" function
           # is using the 'latest' version of MongoDB, which downloads the latest MongoDB distribution from a private S3 bucket.
           #
-          # Any applications that use "latest" will need to have the {drivers_secrets_test_role}
+          # Any applications that use "latest" will need to have the {drivers-secrets-test-role}
           # role defined in their evergreen project.
           # See DRIVERS-3628 for more details: https://jira.mongodb.org/browse/DRIVERS-3628
           - AWS_SECRET_ACCESS_KEY
